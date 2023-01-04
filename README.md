@@ -11,7 +11,7 @@ The *Deep Learning Designer* tool, belonging to the *Deep Learning Toolbox™* f
 
 ## Data exploration and preparation
 
-The dataset used at the network implementation consists of 4500 butterfly images, divided into 50 different classes each representing one species. All images are in color, size 224 x 224 x 3, in jpg format. Shown below are 25 of the 50 different families of butterflies. Specifically they are respectively: *African Giant Swallowtail*, *AN 88*, *Arcigera Flower Moth, Atlas Moth*, *Banced Peacock*, *Becker white*, *Black Hairstreak*, *Blue Spotted Crow*, *Brown Argus*, *Cabbage White*, *Chalk Hill Blue*, *Chestnut*, *Clearwing Moth*, *Clodius Parnassia*, *Comet Moth*, *Common Wood-Nymph*, *Crecent*, *Danaid Eggfly*, *Easter Dapple White*, *Elbowed Pierrot*, *Garden Tiger Month*, *Glittering Sapphire*, *Great Eggfly*, *Green Celled Cattleheart* and *Grey Cloak*.
+The dataset used at the network implementation consists of 4500 butterfly images, divided into 50 different classes each representing one species. All images are in color, size 224 x 224 x 3, in jpg format. Shown below are 25 of the 50 different families of butterflies. Specifically they are: *African Giant Swallowtail*, *AN 88*, *Arcigera Flower Moth, Atlas Moth*, *Banced Peacock*, *Becker white*, *Black Hairstreak*, *Blue Spotted Crow*, *Brown Argus*, *Cabbage White*, *Chalk Hill Blue*, *Chestnut*, *Clearwing Moth*, *Clodius Parnassia*, *Comet Moth*, *Common Wood-Nymph*, *Crecent*, *Danaid Eggfly*, *Easter Dapple White*, *Elbowed Pierrot*, *Garden Tiger Month*, *Glittering Sapphire*, *Great Eggfly*, *Green Celled Cattleheart* and *Grey Cloak*.
 
 ![species](pictures/classes.png?msec=1672791245723)
 
