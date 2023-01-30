@@ -168,3 +168,90 @@ We are, however, obliged to note the following: the model did, on three occasion
 Seeing the two images, we might assume that the model was confused by the shape and style of the wings of the two species, thus focusing on the first two features rather than others, such as colour.
 
 We can now conclude our work by again analysing the results obtained in both the training and testing phases, and can state that our model, especially thanks to the distinctive features (inception modules and 1x1 convolutions above all) of the googlenet network, has achieved its goal of classifying the species of the butterfly classes in the dataset with high precision.
+
+## Cross validation approach
+
+Cross-validation is a common method used to increase the performance of a
+ neural network by evaluating its performance on different subsets of 
+the training data. This helps to prevent overfitting and gives a more 
+reliable estimate of the model's generalization ability to unseen data. So let us now try this new approach to try to increase the accuracy of the model.
+
+It consists of dividing a dataset into multiple subsets, training the 
+model on one subset and evaluating it on the remaining, repeating this 
+process multiple times with different subsets, and finally aggregating 
+the performance results to get a better estimate of the model's ability 
+to generalize to unseen data.
+
+To do this, we initially split the initial imageDataStore into train and test set:
+
+```matlab
+[train_cv, test_cv] = splitEachLabel(image_datastore, 0.7, 0.3, 'randomized');
+```
+
+At this point we use the matlab function *cvpartition()* to partition the train set into a number of partitions k. In this case, k=5 was chosen. MATLAB's "cvpartition" function is used to divide a data set into subsets for cross-validation. It generates indices or partition vectors that can be used to divide data into training and test sets for multiple rounds of cross-validation, such as k-fold cross-validation. The function can create different types of partitions, such as stratified or unstratified random partitions, holdout partitions and others. It provides an easy way to perform cross-validation on a dataset in MATLAB.
+
+```matlab
+k=5
+cv = cvpartition(train_cv.Labels, 'KFold', k);
+```
+
+At this point, having again invoked the previously constructed neural network, we performed cross-validation through the following code.
+
+```matlab
+nets = [];
+accuracies = [];
+
+for i=1:k
+    idx_train = training(cv,i);
+    idx_valid = test(cv,i);
+    train = subset(train_cv, idx_train);
+    valid = subset(train_cv,idx_valid);
+    opts = trainingOptions("sgdm",...
+        "ExecutionEnvironment","auto",...
+        "InitialLearnRate",0.01,...
+        "MaxEpochs",20,...
+        "MiniBatchSize",64,...    
+        "Shuffle","every-epoch",...
+        "ValidationFrequency",70,...
+        "Plots","training-progress",...
+        "ValidationData",valid);
+    [network, traininfo] = trainNetwork(train,lgraph,opts);
+    true_valid_labels = valid.Labels;
+    pred_valid_labels = classify(network);
+    accuracy = mean(true_valid_labels==pred_valid_labels);
+    accuracies = [accuracies, accuracy];
+    nets = [nets, network];
+end
+```
+
+The idea was to iterate a network training a k number of times by changing the training train and validation train from time to time. Then we saved both the accuracy metrics and the DAG-Network models from time to time trained in two arrays, such that at the i-th component of both arrays both the network and the relative accuracy computed in the validation at the i-th iteration were stored. 
+
+![accuracies](pictures/accuracies.png)
+
+At this point we selected the index corresponding to the maximum value among the elements of the accuracies and chose our final network *cv_net* from among the networks stored in the *nets* array.
+
+```matlab
+[max_acc,indx_max] = max(accuracies);
+cv_net = nets(indx_max);
+```
+
+![](pictures/max_acc.png)
+
+![](pictures/cv_net.png)
+
+At this point, once the network was selected, we evaluated its performance in the test set and obtained the following results.
+
+```matlab
+true_test_labels = test_cv.Labels;
+pred_test_labels = classify(cv_net,test_cv);
+accuracy_test_cv = mean(true_test_labels == pred_test_labels);
+
+C = confusionmat(true_test_labels, pred_test_labels);
+confusionchart(C)
+```
+
+![](pictures/accuracy_test_cv.png)
+
+![](pictures/conf_matrix.png)
+
+It is important to note the huge increase achieved, in terms of accuracy, by the network through the use of cross-validation: in fact, it went from an accuracy of 92 percent to an accuracy of 97.55 percent. The conclusion we could draw is that the cross validation approach led to better generalization of butterfly images.
